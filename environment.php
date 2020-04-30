@@ -5,7 +5,7 @@ if (!defined('ENVIRONMENT')) {
     switch ($domain) {
         case '172.18.79.207':
             define('ENVIRONMENT', 'development');
-            define('PATH_DOWNLOADED_ATTACHMENTS', '/var/www/html/valvaradoetr/uploaded_files/');
+            define('PATH_DOWNLOADED_ATTACHMENTS', '/var/www/html/etr/uploaded_files/');
             break;
         case '172.18.79.248':
             define('ENVIRONMENT', 'test');

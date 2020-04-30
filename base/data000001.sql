@@ -1,4 +1,8 @@
 /********************************************I-DAT-EGS-PROTRA-0-12/04/2020********************************************/
+INSERT INTO segu.tsubsistema ("codigo", "nombre", "prefijo", "estado_reg", "nombre_carpeta", "id_subsis_orig", "codigo_git", "organizacion_git", "sw_importacion")
+VALUES
+  (E'PROTRA', E'Procesos de Trabajo', E'PROTRA', E'activo', E'proceso_trabajo', NULL, E'', E'', E'no');
+
 select pxp.f_insert_tgui ('PROCESOS DE TRABAJO', '', 'PWF', 'si', 1, '', 1, '', '', 'PROTRA');
 select pxp.f_insert_tgui ('Departamento TI', 'Departamento TI', 'DTI', 'si', 1, '', 2, '', '', 'PROTRA');
 select pxp.f_insert_tgui ('VPN', 'VPN', 'VPN', 'si', 1, 'sis_proceso_trabajo/vista/vpn/Vpn.php', 3, '', 'Vpn', 'PROTRA');

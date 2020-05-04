@@ -73,7 +73,7 @@ create table if not exists protra.taperturas_digitales
 	num_tramite varchar(200),
 	id_funcionario integer,
 	ids_funcionarios_asignados integer[],
-	fecha_apertura date
+	fecha_apertura timestamp
 )
 inherits (pxp.tbase);
 

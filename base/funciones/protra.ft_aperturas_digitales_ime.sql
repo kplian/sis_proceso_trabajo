@@ -82,19 +82,12 @@ BEGIN
             v_fecha_hora_desde = cast(
                     concat(v_parametros.fecha_recepcion_desde, ' ', v_parametros.hora_recepcion_desde) as timestamp);
             v_fecha_hora_hasta = cast(
-                    concat(v_parametros.fecha_recepcion_hasta, ' ', v_parametros.hora_recepcion_hasta)  as timestamp);
-            v_fecha_hora_apertura = cast(v_parametros.fecha_apertura  as timestamp);
+                    concat(v_parametros.fecha_recepcion_hasta, ' ', v_parametros.hora_recepcion_hasta) as timestamp);
 
             if v_fecha_hora_desde >= v_fecha_hora_hasta then
-                    v_resp = pxp.f_agrega_clave(v_resp, 'mensaje',
-                                        'El campo Fecha Recepción Hasta y la Hora Recepción Hasta deben ser posterior a la Fecha Recepción Desde');
-                    raise exception '%', v_resp;
-            end if;
-
-            if v_fecha_hora_apertura< v_fecha_hora_hasta then
                 v_resp = pxp.f_agrega_clave(v_resp, 'mensaje',
-                                        'El campo Fecha Apertura  debe ser posterior a la Fecha Recepción Hasta');
-                    raise exception '%', v_resp;
+                                            'El campo Fecha Recepción Hasta y la Hora Recepción Hasta deben ser posterior a la Fecha Recepción Desde');
+                raise exception '%', v_resp;
             end if;
 
             v_codigo_tipo_proceso = 'SEG-APDIG';
@@ -143,6 +136,16 @@ BEGIN
                     'Inicio De Aperturas Digitales',
                     '');
 
+            v_codigo = param.f_obtener_correlativo(
+                    'AP',
+                    null,-- par_id,
+                    NULL, --id_uo
+                    NULL, -- id_depto
+                    1,
+                    'PROTRA',
+                    null
+                );
+
             --Sentencia de la insercion
             insert into protra.taperturas_digitales(estado_reg,
                                                     fecha_recepcion_desde,
@@ -161,8 +164,7 @@ BEGIN
                                                     id_estado_wf,
                                                     estado,
                                                     num_tramite,
-                                                    id_funcionario,
-                                                    fecha_apertura)
+                                                    id_funcionario)
             values ('activo',
                     v_parametros.fecha_recepcion_desde,
                     v_parametros.hora_recepcion_desde,
@@ -175,39 +177,14 @@ BEGIN
                     v_parametros._nombre_usuario_ai,
                     null,
                     null,
-                    '',
+                    v_codigo,
                     v_id_proceso_wf,
                     v_id_estado_wf,
                     v_codigo_estado,
                     v_num_tramite,
-                    v_parametros.id_funcionario,
-                    v_parametros.fecha_apertura)
+                    v_parametros.id_funcionario)
             RETURNING id_apertura_digital into v_id_apertura_digital;
 
-            select id_periodo
-            into v_id_periodo
-            from param.tperiodo per
-            where per.fecha_ini <= now()::date
-              and per.fecha_fin >= now()::date
-            limit 1
-            offset
-            0;
-            v_codigo = param.f_obtener_correlativo(
-                    'C_ADIG',
-                    v_id_periodo,-- par_id,
-                    NULL, --id_uo
-                    NULL, -- id_depto
-                    p_id_usuario,
-                    'PROTRA',
-                    NULL,
-                    0,
-                    0,
-                    'protra.taperturas_digitales',
-                    v_id_apertura_digital,
-                    null
-                );
-
-            UPDATE protra.taperturas_digitales SET codigo = v_codigo where id_apertura_digital = v_id_apertura_digital;
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp, 'mensaje',
                                         'Aperturas Digitales almacenado(a) con exito (id_apertura_digital' ||
@@ -230,21 +207,25 @@ BEGIN
 
         begin
             --Sentencia de la modificacion
+            select dig.estado
+            into v_estado
+            from protra.taperturas_digitales dig
+            where dig.id_apertura_digital = v_parametros.id_apertura_digital;
+
+            if (v_estado not in ('pendiente', 'borrador')) then
+                v_resp = pxp.f_agrega_clave(v_resp, 'mensaje',
+                                            'No es posible modificar una Apertura Digital en el estado ' || v_estado);
+                raise exception '%', v_resp;
+            end if;
+
             v_fecha_hora_desde = cast(
                     concat(v_parametros.fecha_recepcion_desde, ' ', v_parametros.hora_recepcion_desde) as timestamp);
             v_fecha_hora_hasta = cast(
                     concat(v_parametros.fecha_recepcion_hasta, ' ', v_parametros.hora_recepcion_hasta) as timestamp);
-            v_fecha_hora_apertura = cast(v_parametros.fecha_apertura as timestamp);
 
             if v_fecha_hora_desde >= v_fecha_hora_hasta then
                 v_resp = pxp.f_agrega_clave(v_resp, 'mensaje',
                                             'El campo Fecha Recepción Hasta y la Hora Recepción Hasta deben ser posterior a la Fecha Recepción Desde');
-                raise exception '%', v_resp;
-            end if;
-
-            if v_fecha_hora_apertura < v_fecha_hora_hasta then
-                v_resp = pxp.f_agrega_clave(v_resp, 'mensaje',
-                                            'El campo Fecha Apertura  debe ser posterior a la Fecha Recepción Hasta');
                 raise exception '%', v_resp;
             end if;
 
@@ -258,8 +239,7 @@ BEGIN
                 fecha_mod             = now(),
                 id_usuario_ai         = v_parametros._id_usuario_ai,
                 usuario_ai            = v_parametros._nombre_usuario_ai,
-                id_funcionario        = v_parametros.id_funcionario,
-                fecha_apertura        = v_parametros.fecha_apertura
+                id_funcionario        = v_parametros.id_funcionario
             where id_apertura_digital = v_parametros.id_apertura_digital;
 
             --Definicion de la respuesta
@@ -288,6 +268,29 @@ BEGIN
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp, 'mensaje', 'Aperturas Digitales eliminado(a)');
+            v_resp = pxp.f_agrega_clave(v_resp, 'id_apertura_digital', v_parametros.id_apertura_digital::varchar);
+
+            --Devuelve la respuesta
+            return v_resp;
+
+        end;
+        /*********************************
+         #TRANSACCION:  'PROTRA_DIG_ASIGFECHA'
+         #DESCRIPCION:	Asignacion de fecha de apertura digital
+         #AUTOR:		valvarado
+         #FECHA:		20-04-2020 22:13:29
+        ***********************************/
+
+    elsif (p_transaccion = 'PROTRA_DIG_ASIGFECHA') then
+
+        begin
+            --Sentencia de la eliminacion
+            update protra.taperturas_digitales
+            set fecha_apertura = now()
+            where id_apertura_digital = v_parametros.id_apertura_digital;
+
+            --Definicion de la respuesta
+            v_resp = pxp.f_agrega_clave(v_resp, 'mensaje', 'Fecha de Apertura establecida');
             v_resp = pxp.f_agrega_clave(v_resp, 'id_apertura_digital', v_parametros.id_apertura_digital::varchar);
 
             --Devuelve la respuesta

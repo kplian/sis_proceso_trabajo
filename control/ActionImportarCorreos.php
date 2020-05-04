@@ -17,7 +17,7 @@ ob_start();
 $_SESSION["_CANTIDAD_ERRORES"] = 0;
 
 include_once(dirname(__FILE__) . '/../../lib/lib_control/CTincludes.php');
-include_once(dirname(__FILE__) . '/../../sis_proceso_trabajo/control/ACTAperturasDigitalesDet.php');
+include_once(dirname(__FILE__) . '/../../sis_proceso_trabajo/control/ACTImportador.php');
 
 $objPostData = new CTPostData();
 $arr_unlink = array();
@@ -26,7 +26,7 @@ $aPostData = $objPostData->getData();
 $_SESSION["_PETICION"] = serialize($aPostData);
 $objParam = new CTParametro($aPostData['p'], null, $aPostFiles);
 $objParam->addParametro('id_usuario', 1);
-$aperturaDigitalDet = new ACTAperturasDigitalesDet($objParam);
+$aperturaDigitalDet = new ACTImportador($objParam);
 $rs = $aperturaDigitalDet->importarCorreos();
 print_r($rs);
 ?>

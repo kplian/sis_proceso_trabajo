@@ -29,6 +29,7 @@ class MODAperturasDigitales extends MODbase
         $this->captura('id_apertura_digital', 'int4');
         $this->captura('id_cuenta_correo', 'int4');
         $this->captura('estado_reg', 'varchar');
+        $this->captura('codigo', 'varchar');
         $this->captura('obs_dba', 'varchar');
         $this->captura('fecha_recepcion_desde', 'date');
         $this->captura('hora_recepcion_desde', 'time');
@@ -50,7 +51,7 @@ class MODAperturasDigitales extends MODbase
         $this->captura('num_tramite', 'varchar');
         $this->captura('desc_funcionario1', 'text');
         $this->captura('id_funcionario', 'int4');
-        $this->captura('fecha_apertura', 'date');
+        $this->captura('fecha_apertura', 'timestamp');
         $this->captura('ids_funcionarios_asignados', 'integer[]');
 
         //Ejecuta la instruccion
@@ -70,7 +71,6 @@ class MODAperturasDigitales extends MODbase
 
         //Define los parametros para la funcion
         $this->setParametro('id_funcionario', 'id_funcionario', 'int4');
-        $this->setParametro('fecha_apertura', 'fecha_apertura', 'date');
         $this->setParametro('estado_reg', 'estado_reg', 'varchar');
         $this->setParametro('obs_dba', 'obs_dba', 'varchar');
         $this->setParametro('fecha_recepcion_desde', 'fecha_recepcion_desde', 'date');
@@ -95,7 +95,6 @@ class MODAperturasDigitales extends MODbase
 
         //Define los parametros para la funcion
         $this->setParametro('id_funcionario', 'id_funcionario', 'int4');
-        $this->setParametro('fecha_apertura', 'fecha_apertura', 'date');
         $this->setParametro('id_apertura_digital', 'id_apertura_digital', 'int4');
         $this->setParametro('estado_reg', 'estado_reg', 'varchar');
         $this->setParametro('obs_dba', 'obs_dba', 'varchar');

@@ -44,6 +44,7 @@ BEGIN
 						dig.id_apertura_digital,
 			            dig.id_cuenta_correo,
 						dig.estado_reg,
+			            dig.codigo,
 						dig.obs_dba,
 						dig.fecha_recepcion_desde,
 			            dig.hora_recepcion_desde,

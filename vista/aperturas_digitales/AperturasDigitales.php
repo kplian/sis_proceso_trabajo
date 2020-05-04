@@ -62,6 +62,21 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
+                        name: 'codigo',
+                        fieldLabel: 'C&oacute;digo',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength: 100
+                    },
+                    type: 'TextField',
+                    filters: {pfiltro: 'dig.codigo', type: 'string'},
+                    id_grupo: 1,
+                    grid: true,
+                    form: false
+                },
+                {
+                    config: {
                         name: 'estado',
                         fieldLabel: 'Estado',
                         allowBlank: true,
@@ -223,23 +238,20 @@ header("content-type: text/javascript; charset=UTF-8");
                 {
                     config: {
                         name: 'fecha_apertura',
-                        fieldLabel: 'Fecha Apertura',
-                        increment: 5,
-                        allowBlank: false,
-                        anchor: '50%',
+                        fieldLabel: 'Fecha Reenvio Correos.',
+                        allowBlank: true,
+                        anchor: '80%',
                         gwidth: 100,
                         format: 'd/m/Y',
                         renderer: function (value, p, record) {
-                            return value ? value.dateFormat('d/m/Y') : ''
+                            return value ? value.dateFormat('d/m/Y H:i:s') : ''
                         }
                     },
                     type: 'DateField',
                     filters: {pfiltro: 'dig.fecha_apertura', type: 'date'},
                     id_grupo: 1,
                     grid: true,
-                    form: true,
-                    egrid: true
-
+                    form: false
                 },
                 {
                     config: {
@@ -428,6 +440,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name: 'id_apertura_digital', type: 'numeric'},
                 {name: 'id_cuenta_correo', type: 'numeric'},
                 {name: 'estado_reg', type: 'string'},
+                {name: 'codigo', type: 'string'},
                 {name: 'obs_dba', type: 'string'},
                 {name: 'fecha_recepcion_desde', type: 'date', dateFormat: 'Y-m-d'},
                 {name: 'hora_recepcion_desde', type: 'string'},
@@ -449,7 +462,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name: 'num_tramite', type: 'string'},
                 {name: 'desc_funcionario1', type: 'string'},
                 {name: 'id_funcionario', type: 'numeric'},
-                {name: 'fecha_apertura', type: 'date', dateFormat: 'Y-m-d'}
+                {name: 'fecha_apertura', type: 'date'}
             ],
             sortInfo: {
                 field: 'id_apertura_digital',

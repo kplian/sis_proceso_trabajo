@@ -19,32 +19,12 @@ class ACTImportador extends ACTbase
 {
     function importarCorreos()
     {
-        $this->objParam->addParametroConsulta('ordenacion', 'id_apertura_digital');
-        $this->objParam->addParametroConsulta('dir_ordenacion', 'desc');
-        $this->objParam->addParametroConsulta('cantidad', 100000);
-        $this->objParam->addParametroConsulta('puntero', 0);
-        $this->objParam->parametros_consulta['filtro'] = ' 0 = 0 ';
-        if ($this->objParam->getParametro('id_apertura_digital') != '') {
-            $this->objParam->addFiltro(" dig.id_apertura_digital = " . $this->objParam->getParametro('id_apertura_digital') . "");
-        } else {
-            $this->objParam->addFiltro(" dig.estado = ''pendiente'' ");
-        }
-
-        $this->objFunc = $this->create('MODImportador');
-        $rs = $this->objFunc->listarAperturasDigitales($this->objParam);
+        $rs = $this->obtenerAperturaDigital($this->objParam->getParametro('id_apertura_digital'));
 
         if ($rs->getTipo() == 'EXITO') {
             $datos = $rs->getDatos();
             foreach ($datos as $apertura) {
-                $this->objParam->addParametroConsulta('ordenacion', 'id_cuenta_correo');
-                $this->objParam->addParametroConsulta('dir_ordenacion', 'desc');
-                $this->objParam->addParametroConsulta('cantidad', 1);
-                $this->objParam->addParametroConsulta('puntero', 0);
-                $this->objParam->parametros_consulta['filtro'] = ' 0 = 0 ';
-                $this->objParam->addFiltro(" cueco.id_cuenta_correo = " . $apertura['id_cuenta_correo'] . "");
-
-                $this->objFunc1 = $this->create('MODImportador');
-                $rs1 = $this->objFunc1->listarCuentasCorreo($this->objParam);
+                $rs1 = $this->obtenerCuentaCorreo($apertura['id_cuenta_correo']);
                 if ($rs1->getTipo() == 'EXITO') {
                     $datos1 = $rs1->getDatos();
 
@@ -62,7 +42,7 @@ class ACTImportador extends ACTbase
                     $desde_fecha = new DateTime($apertura['fecha_recepcion_desde'] . ' ' . $apertura['hora_recepcion_desde']);
                     $hasta_fecha = new DateTime($apertura['fecha_recepcion_hasta'] . ' ' . $apertura['hora_recepcion_hasta']);
 
-                    $criteria = "SUBJECT " . $apertura['num_tramite'];
+                    $criteria = "SUBJECT " . $apertura['codigo'];
                     $criteria .= " UNSEEN";
 
                     $mails = $imapLibrary->search($criteria);
@@ -83,7 +63,6 @@ class ACTImportador extends ACTbase
                             $aperturaDet = $this->create('MODImportador');
                             $rs = $aperturaDet->insertarAperturasDigitalesDet($this->objParam);
                             if ($rs->getTipo() == 'EXITO') {
-                                $imapLibrary->downloadAttachment(PATH_DOWNLOADED_ATTACHMENTS, $mensaje['uid']);
                                 $importados++;
                             }
 
@@ -132,6 +111,8 @@ class ACTImportador extends ACTbase
                 $isConnected = $imapLibrary->connect();
                 $imapLibrary->select_folder($datosCuentaCorreo[0]['carpeta']);
                 $mails = array_column($datosAperturaDet, 'numero_email');
+                $cantidad_correos = count($mails);
+                $enviados = 0;
                 $mensajes = $imapLibrary->get_messages($mails);
                 foreach ($mensajes as $mensaje) {
                     foreach ($ids_funcionarios as $id) {
@@ -150,6 +131,10 @@ class ACTImportador extends ACTbase
                             $correo->setAsunto($mensaje['subject']);
                             $correo->setMensajeHtml($mensaje['body']['html']);
                             $status = $correo->enviarCorreo();
+                            if($status == "OK"){
+                                unlink(PATH_DOWNLOADED_ATTACHMENTS . $filename);
+                                $enviados++;
+                            }
                         }
                     }
 
@@ -157,10 +142,24 @@ class ACTImportador extends ACTbase
             }
 
         }
-        $mensajeExito = new Mensaje();
-        $mensajeExito->setMensaje('EXITO', 'ACTImportador.php', 'Correos Importados Verifique su información', 'Se enviaron los correos para su apertura!', '', '', '', '');
-        $this->res = $mensajeExito;
-        $this->res->imprimirRespuesta($this->res->generarJson());
+
+        if ($enviados > 0) {
+            if ($this->objParam->getParametro('id_apertura_digital') != '') {
+                $this->objParam->addParametro('id_apertura_digital', $this->objParam->getParametro('id_apertura_digital'));
+                $apImportador = $this->create('MODImportador');
+                $rs = $apImportador->asignarFechaApertura($this->objParam);
+            }
+            $mensajeExito = new Mensaje();
+            $mensajeExito->setMensaje('EXITO', 'ACTImportador.php', 'Correos de aperturas Reenviadas', 'Se enviaron ' . $enviados . ' correos para su apertura!', '', '', '', '');
+            $this->res = $mensajeExito;
+            $this->res->imprimirRespuesta($this->res->generarJson());
+        } else {
+            $mensajeExito = new Mensaje();
+            $mensajeExito->setMensaje('ERROR', 'ACTAperturasDigitalesDet.php', 'Verifique su información', 'Un fallo ocurrió al enviar los correos!', '', '', '', '');
+            $this->res = $mensajeExito;
+            $this->res->imprimirRespuesta($this->res->generarJson());
+        }
+
     }
 
     function obtenerAperturaDigital($id_apertura_digital)

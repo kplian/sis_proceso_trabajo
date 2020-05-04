@@ -95,7 +95,7 @@ create table if not exists protra.taperturas_digitales_det
 )
 inherits (pxp.tbase);
 
-alter table protra.taperturas_digitales_det owner to dbvalvaradoetr_conexion;
+alter table protra.taperturas_digitales_det owner to postgres;
 
 create unique index if not exists taperturas_digitales_det_numero_email_uindex
 	on protra.taperturas_digitales_det (numero_email);

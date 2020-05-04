@@ -132,7 +132,11 @@ class ACTImportador extends ACTbase
                             $correo->setMensajeHtml($mensaje['body']['html']);
                             $status = $correo->enviarCorreo();
                             if($status == "OK"){
-                                unlink(PATH_DOWNLOADED_ATTACHMENTS . $filename);
+                                if (array_key_exists('attachments', $mensaje)) {
+                                    foreach ($mensaje['attachments'] as $attach) {
+                                        unlink(PATH_DOWNLOADED_ATTACHMENTS . $attach['name']);
+                                    }
+                                }
                                 $enviados++;
                             }
                         }

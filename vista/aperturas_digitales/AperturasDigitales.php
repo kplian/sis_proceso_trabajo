@@ -706,7 +706,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         {
                             config: {
                                 name: 'ids_funcionarios_asignados',
-                                fieldLabel: 'Funcionario',
+                                fieldLabel: 'Comit&eacute; Evaluador',
                                 allowBlank: false,
                                 emptyText: 'Elegir ...',
                                 tinit: false,

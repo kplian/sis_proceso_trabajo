@@ -38,7 +38,6 @@ BEGIN
 	if(p_transaccion='PROTRA_DIG_SEL')then
      				
     	begin
---     	    raise exception '%', v_parametros.filtro;
     		--Sentencia de la consulta
 			v_consulta:='select
 						dig.id_apertura_digital,

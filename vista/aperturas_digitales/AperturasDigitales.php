@@ -21,6 +21,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 Phx.vista.AperturasDigitales.superclass.constructor.call(this, config);
                 this.init();
                 this.addBotones();
+                this.store.baseParams.id_funcionario = Phx.CP.config_ini.id_funcionario;
                 this.load({params: {start: 0, limit: this.tam_pag}})
             },
 
@@ -137,6 +138,55 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
+                        name: 'id_cuenta_correo',
+                        fieldLabel: 'Correo',
+                        emptyText: 'Correo...',
+                        typeAhead: true,
+                        lazyRender: true,
+                        allowBlank: false,
+                        mode: 'remote',
+                        gwidth: 180,
+                        anchor: '100%',
+                        store: new Ext.data.JsonStore({
+                            url: '../../sis_proceso_trabajo/control/CuentasCorreo/listarCuentasCorreo',
+                            id: 'id_cuenta_correo',
+                            root: 'datos',
+                            sortInfo: {
+                                field: 'id_cuenta_correo',
+                                direction: 'ASC'
+                            },
+                            totalProperty: 'total',
+                            fields: ['id_cuenta_correo', 'descripcion', 'correo'],
+                            // turn on remote sorting
+                            remoteSort: true,
+                            baseParams: {par_filtro: 'cueco.correo#cueco.descripcion'}
+                        }),
+                        valueField: 'id_cuenta_correo',
+                        displayField: 'correo',
+                        gdisplayField: 'correo',
+                        hiddenName: 'id_cuenta_correo',
+                        forceSelection: true,
+                        typeAhead: false,
+                        triggerAction: 'all',
+                        lazyRender: true,
+                        mode: 'remote',
+                        pageSize: 10,
+                        queryDelay: 1000,
+                        resizable: true,
+                        minChars: 1,
+                        renderer: function (value, p, record) {
+                            return String.format('{0}', record.data['correo']);
+                        }
+                    },
+                    type: 'ComboBox',
+                    id_grupo: 2,
+                    filters: {pfiltro: 'cueco.descripcion#cueco.correo', type: 'string'},
+                    grid: false,
+                    form: true,
+                    bottom_filter: true
+                },
+                {
+                    config: {
                         name: 'id_funcionario',
                         hiddenName: 'id_funcionario',
                         origen: 'FUNCIONARIO',
@@ -146,7 +196,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         anchor: '100%',
                         valueField: 'id_funcionario',
                         gdisplayField: 'desc_funcionario',
-                        baseParams: {es_combo_solicitud: 'si'},
+                        baseParams: {par_filtro: 'FUNCIO.id_funcionario#desc_funcionario1'},
                         renderer: function (value, p, record) {
                             return String.format('{0}', record.data['desc_funcionario']);
                         }
@@ -252,55 +302,6 @@ header("content-type: text/javascript; charset=UTF-8");
                     id_grupo: 1,
                     grid: true,
                     form: false
-                },
-                {
-                    config: {
-                        name: 'id_cuenta_correo',
-                        fieldLabel: 'Correo',
-                        emptyText: 'Correo...',
-                        typeAhead: true,
-                        lazyRender: true,
-                        allowBlank: false,
-                        mode: 'remote',
-                        gwidth: 180,
-                        anchor: '100%',
-                        store: new Ext.data.JsonStore({
-                            url: '../../sis_proceso_trabajo/control/CuentasCorreo/listarCuentasCorreo',
-                            id: 'id_cuenta_correo',
-                            root: 'datos',
-                            sortInfo: {
-                                field: 'id_cuenta_correo',
-                                direction: 'ASC'
-                            },
-                            totalProperty: 'total',
-                            fields: ['id_cuenta_correo', 'descripcion', 'correo'],
-                            // turn on remote sorting
-                            remoteSort: true,
-                            baseParams: {par_filtro: 'cueco.correo#cueco.descripcion'}
-                        }),
-                        valueField: 'id_cuenta_correo',
-                        displayField: 'correo',
-                        gdisplayField: 'correo',
-                        hiddenName: 'id_cuenta_correo',
-                        forceSelection: true,
-                        typeAhead: false,
-                        triggerAction: 'all',
-                        lazyRender: true,
-                        mode: 'remote',
-                        pageSize: 10,
-                        queryDelay: 1000,
-                        resizable: true,
-                        minChars: 1,
-                        renderer: function (value, p, record) {
-                            return String.format('{0}', record.data['correo']);
-                        }
-                    },
-                    type: 'ComboBox',
-                    id_grupo: 2,
-                    filters: {pfiltro: 'cueco.descripcion#cueco.correo', type: 'string'},
-                    grid: false,
-                    form: true,
-                    bottom_filter: true
                 },
                 {
                     config: {
@@ -552,7 +553,7 @@ header("content-type: text/javascript; charset=UTF-8");
             onButtonNew: function () {
                 var self = this;
                 Phx.vista.AperturasDigitales.superclass.onButtonNew.call(this);
-                this.Cmp.id_funcionario.store.baseParams.query = '<?php echo $_SESSION['ss_id_funcionario']; ?>';
+                this.Cmp.id_funcionario.store.baseParams.query = Phx.CP.config_ini.id_funcionario;
                 this.Cmp.id_funcionario.store.load({
                     params: {start: 0, limit: this.tam_pag},
                     callback: function (r) {

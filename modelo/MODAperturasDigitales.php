@@ -24,7 +24,7 @@ class MODAperturasDigitales extends MODbase
         $this->procedimiento = 'protra.ft_aperturas_digitales_sel';
         $this->transaccion = 'PROTRA_DIG_SEL';
         $this->tipo_procedimiento = 'SEL';//tipo de transaccion
-
+        $this->setParametro('id_funcionario', 'id_funcionario', 'int4');
         //Definicion de la lista del resultado del query
         $this->captura('id_apertura_digital', 'int4');
         $this->captura('id_cuenta_correo', 'int4');

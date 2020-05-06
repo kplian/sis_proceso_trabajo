@@ -49,21 +49,22 @@ class ACTImportador extends ACTbase
                     $cantidad_correos = count($mails);
                     $importados = 0;
                     $mensajes = $imapLibrary->get_messages($mails);
-
-                    foreach ($mensajes as $mensaje) {
-                        $date = new DateTime($mensaje['date']);
-                        if ($date >= $desde_fecha && $date <= $hasta_fecha) {
-                            $this->objParam->addParametro('estado_reg', 'activo');
-                            $this->objParam->addParametro('uid_email', $mensaje['id']);
-                            $this->objParam->addParametro('numero_email', $mensaje['uid']);
-                            $this->objParam->addParametro('remitente_email', $mensaje['from']['email']);
-                            $this->objParam->addParametro('asunto_email', $mensaje['subject']);
-                            $this->objParam->addParametro('fecha_recepcion_email', $date->format("Y-m-d H:i:s.u"));
-                            $this->objParam->addParametro('id_apertura_digital', $apertura['id_apertura_digital']);
-                            $aperturaDet = $this->create('MODImportador');
-                            $rs = $aperturaDet->insertarAperturasDigitalesDet($this->objParam);
-                            if ($rs->getTipo() == 'EXITO') {
-                                $importados++;
+                    if ($cantidad_correos > 0) {
+                        foreach ($mensajes as $mensaje) {
+                            $date = new DateTime($mensaje['date']);
+                            if ($date >= $desde_fecha && $date <= $hasta_fecha) {
+                                $this->objParam->addParametro('estado_reg', 'activo');
+                                $this->objParam->addParametro('uid_email', $mensaje['id']);
+                                $this->objParam->addParametro('numero_email', $mensaje['uid']);
+                                $this->objParam->addParametro('remitente_email', $mensaje['from']['email']);
+                                $this->objParam->addParametro('asunto_email', $mensaje['subject']);
+                                $this->objParam->addParametro('fecha_recepcion_email', $date->format("Y-m-d H:i:s.u"));
+                                $this->objParam->addParametro('id_apertura_digital', $apertura['id_apertura_digital']);
+                                $aperturaDet = $this->create('MODImportador');
+                                $rs = $aperturaDet->insertarAperturasDigitalesDet($this->objParam);
+                                if ($rs->getTipo() == 'EXITO') {
+                                    $importados++;
+                                }
                             }
 
                         }
@@ -73,14 +74,14 @@ class ACTImportador extends ACTbase
 
         }
 
-        if ($importados > 0 && $cantidad_correos == $importados) {
+        if ($importados > 0) {
             $mensajeExito = new Mensaje();
-            $mensajeExito->setMensaje('EXITO', 'ACTAperturasDigitalesDet.php', 'Correos Importados Verifique su información', 'Se importaron ' . $cantidad_correos . ' correos!', '', '', '', '');
+            $mensajeExito->setMensaje('EXITO', 'ACTAperturasDigitalesDet.php', 'Correos Importados Verifiqué su información', 'Se importaron ' . $cantidad_correos . ' correos!', '', '', '', '');
             $this->res = $mensajeExito;
             $this->res->imprimirRespuesta($this->res->generarJson());
         } else {
             $mensajeExito = new Mensaje();
-            $mensajeExito->setMensaje('ERROR', 'ACTAperturasDigitalesDet.php', 'Verifique su información', 'Un fallo insperado ocurrió al importar correos!', '', '', '', '');
+            $mensajeExito->setMensaje('ERROR', 'ACTAperturasDigitalesDet.php', 'No hay correos en su bandeja para importar', 'No se importaron elementos!', '', '', '', '');
             $this->res = $mensajeExito;
             $this->res->imprimirRespuesta($this->res->generarJson());
         }
@@ -114,30 +115,32 @@ class ACTImportador extends ACTbase
                 $cantidad_correos = count($mails);
                 $enviados = 0;
                 $mensajes = $imapLibrary->get_messages($mails);
-                foreach ($mensajes as $mensaje) {
-                    foreach ($ids_funcionarios as $id) {
-                        $rsFuncionario = $this->obtenerFuncionario($id);
-                        if ($rsFuncionario->getTipo() == 'EXITO') {
-                            $datosFuncionario = $rsFuncionario->getDatos();
-                            $correo = new CorreoExterno();
-                            if (array_key_exists('attachments', $mensaje)) {
-                                foreach ($mensaje['attachments'] as $attach) {
-                                    $filename = $attach['name'];
-                                    $imapLibrary->downloadAttachment(PATH_DOWNLOADED_ATTACHMENTS, $mensaje['uid']);
-                                    $correo->addAdjunto(PATH_DOWNLOADED_ATTACHMENTS . $filename, $filename);
-                                }
-                            }
-                            $correo->addDestinatario($datosFuncionario[0]['email_empresa'], $datosFuncionario[0]['desc_funcionario1']);
-                            $correo->setAsunto($mensaje['subject']);
-                            $correo->setMensajeHtml($mensaje['body']['html']);
-                            $status = $correo->enviarCorreo();
-                            if($status == "OK"){
+                if ($cantidad_correos) {
+                    foreach ($mensajes as $mensaje) {
+                        foreach ($ids_funcionarios as $id) {
+                            $rsFuncionario = $this->obtenerFuncionario($id);
+                            if ($rsFuncionario->getTipo() == 'EXITO') {
+                                $datosFuncionario = $rsFuncionario->getDatos();
+                                $correo = new CorreoExterno();
                                 if (array_key_exists('attachments', $mensaje)) {
                                     foreach ($mensaje['attachments'] as $attach) {
-                                        unlink(PATH_DOWNLOADED_ATTACHMENTS . $attach['name']);
+                                        $filename = $attach['name'];
+                                        $imapLibrary->downloadAttachment(PATH_DOWNLOADED_ATTACHMENTS, $mensaje['uid']);
+                                        $correo->addAdjunto(PATH_DOWNLOADED_ATTACHMENTS . $filename, $filename);
                                     }
                                 }
-                                $enviados++;
+                                $correo->addDestinatario($datosFuncionario[0]['email_empresa'], $datosFuncionario[0]['desc_funcionario1']);
+                                $correo->setAsunto($mensaje['subject']);
+                                $correo->setMensajeHtml($mensaje['body']['html']);
+                                $status = $correo->enviarCorreo();
+                                if ($status == "OK") {
+                                    if (array_key_exists('attachments', $mensaje)) {
+                                        foreach ($mensaje['attachments'] as $attach) {
+                                            unlink(PATH_DOWNLOADED_ATTACHMENTS . $attach['name']);
+                                        }
+                                    }
+                                    $enviados++;
+                                }
                             }
                         }
                     }
@@ -159,7 +162,7 @@ class ACTImportador extends ACTbase
             $this->res->imprimirRespuesta($this->res->generarJson());
         } else {
             $mensajeExito = new Mensaje();
-            $mensajeExito->setMensaje('ERROR', 'ACTAperturasDigitalesDet.php', 'Verifique su información', 'Un fallo ocurrió al enviar los correos!', '', '', '', '');
+            $mensajeExito->setMensaje('ERROR', 'ACTAperturasDigitalesDet.php', 'No se realizó ningún reenvió de correo', 'No se realizarón los envios de correo', '', '', '', '');
             $this->res = $mensajeExito;
             $this->res->imprimirRespuesta($this->res->generarJson());
         }

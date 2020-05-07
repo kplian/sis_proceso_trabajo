@@ -58,7 +58,9 @@ BEGIN
 			id_usuario_ai,
 			usuario_ai,
 			id_usuario_mod,
-			fecha_mod
+			fecha_mod,
+            texto_asunto_confirmacion,
+            texto_mensaje_confirmacion
           	) values(
 			'activo',
 			v_parametros.host,
@@ -74,10 +76,9 @@ BEGIN
 			v_parametros._id_usuario_ai,
 			v_parametros._nombre_usuario_ai,
 			null,
-			null
-							
-			
-			
+			null,
+            v_parametros.texto_asunto_confirmacion,
+            v_parametros.texto_mensaje_confirmacion
 			)RETURNING id_cuenta_correo into v_id_cuenta_correo;
 			
 			--Definicion de la respuesta
@@ -112,7 +113,9 @@ BEGIN
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai
+			usuario_ai = v_parametros._nombre_usuario_ai,
+            texto_asunto_confirmacion  = v_parametros.texto_asunto_confirmacion,
+            texto_mensaje_confirmacion = v_parametros.texto_mensaje_confirmacion
 			where id_cuenta_correo=v_parametros.id_cuenta_correo;
                
 			--Definicion de la respuesta

@@ -64,6 +64,7 @@ class ACTImportador extends ACTbase
                                 $rs = $aperturaDet->insertarAperturasDigitalesDet($this->objParam);
                                 if ($rs->getTipo() == 'EXITO') {
                                     $importados++;
+                                    $this->confirmarRecepcion($apertura, $datos1[0], $mensaje);
                                 }
                             }
 
@@ -230,6 +231,22 @@ class ACTImportador extends ACTbase
         $this->objParam->addFiltro("FUNCAR.fecha_finalizacion >= now() ");
         $this->objFunc = $this->create('MODImportador');
         return $this->objFunc->obtenerFuncionario($this->objParam);
+    }
+
+    function confirmarRecepcion($apertura, $cuentaCorreo, $mensaje)
+    {
+        $asunto = $cuentaCorreo['texto_asunto_confirmacion'];
+        $texto_mensaje = $cuentaCorreo['texto_mensaje_confirmacion'];
+        $asunto = str_replace('CODIGO_APERTURA', $apertura['codigo'], $asunto);
+        $texto_mensaje = str_replace('NOMBRE_REMITENTE', $mensaje['from']['name'], $texto_mensaje);
+        $texto_mensaje = str_replace('CODIGO_APERTURA', $apertura['codigo'], $texto_mensaje);
+        $correo = new CorreoExterno();
+        $correo->addDestinatario($mensaje['from']['email'], $mensaje['from']['name']);
+        $correo->setAsunto($asunto);
+        $correo->setMensajeHtml($texto_mensaje);
+        $correo->setUsuario($cuentaCorreo['usuario']);
+        $correo->setPassword($cuentaCorreo['contrasena']);
+        return $correo->enviarCorreo();
     }
 }
 

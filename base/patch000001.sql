@@ -106,4 +106,10 @@ create unique index if not exists taperturas_digitales_det_uid_email_uindex
 
 
 /***********************************F-SCP-VAN-PROTRA-0-30/04/2020****************************************/
+/***********************************I-SCP-VAN-PROTRA-0-07/05/2020****************************************/
+alter table protra.tcuentas_correo
+	add texto_asunto_confirmacion text;
 
+alter table protra.tcuentas_correo
+	add texto_mensaje_confirmacion text;
+/***********************************F-SCP-VAN-PROTRA-0-07/05/2020****************************************/

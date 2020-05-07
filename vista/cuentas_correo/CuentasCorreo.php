@@ -186,6 +186,51 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config: {
+                        name: 'texto_asunto_confirmacion',
+                        fieldLabel: 'Asunto Correo Confirmaci&oacute;n',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength: 100,
+                        originalValue: 'Confirmación de recepción para la apertura CODIGO_APERTURA ',
+                        qtip: `<b>(Incluye los siguientes patrones para perzonalizar el contendio)</b> <BR>
+                            <b>CODIGO_APERTURA</b>: Codigo de la apertura a la cual se recepciono.<br>`
+                    },
+                    type: 'TextField',
+                    filters: {pfiltro: 'cueco.texto_asunto_confirmacion', type: 'string'},
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+                {
+                    config: {
+                        name: 'texto_mensaje_confirmacion',
+                        fieldLabel: 'Mensaje Correo Confirmaci&oacute;n',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength: 50000,
+                        defaultValue: `Estimado NOMBRE_REMITENTE,<br/>
+                            <br/>
+                            Su propuesta para la Apertura  CODIGO_APERTURA fue recepcionada.<br/>
+                            <br/>
+                            Agradecemos su interes de trabajar con nosotros.<br/>
+                            <br/>
+                            Saludos,<br/>
+                            <br/>
+                            ENDE TRANSMISION S.A.`,
+                        qtip: `<b>(Incluye los siguientes patrones para perzonalizar el contendio)</b> <BR>
+                            <b>NOMBRE_REMITENTE</b>: Nombre del propietaro del correo recepcionado.<br>
+                            <b>CODIGO_APERTURA</b>: Codigo de la apertura a la cual se recepciono.<br>`
+                    },
+                    type: 'HtmlEditor',
+                    filters: {pfiltro: 'cueco.texto_mensaje_confirmacion', type: 'string'},
+                    id_grupo: 1,
+                    grid: true,
+                    form: true
+                },
+                {
+                    config: {
                         name: 'usr_reg',
                         fieldLabel: 'Creado por',
                         allowBlank: true,
@@ -307,6 +352,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name: 'fecha_mod', type: 'date', dateFormat: 'Y-m-d H:i:s.u'},
                 {name: 'usr_reg', type: 'string'},
                 {name: 'usr_mod', type: 'string'},
+                {name: 'texto_asunto_confirmacion', type: 'string'},
+                {name: 'texto_mensaje_confirmacion', type: 'string'}
 
             ],
             sortInfo: {

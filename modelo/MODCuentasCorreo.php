@@ -45,6 +45,8 @@ class MODCuentasCorreo extends MODbase
         $this->captura('fecha_mod', 'timestamp');
         $this->captura('usr_reg', 'varchar');
         $this->captura('usr_mod', 'varchar');
+        $this->captura('texto_asunto_confirmacion', 'text');
+        $this->captura('texto_mensaje_confirmacion', 'text');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -72,7 +74,8 @@ class MODCuentasCorreo extends MODbase
         $this->setParametro('carpeta', 'carpeta', 'varchar');
         $this->setParametro('correo', 'correo', 'varchar');
         $this->setParametro('descripcion', 'descripcion', 'varchar');
-
+        $this->setParametro('texto_asunto_confirmacion', 'texto_asunto_confirmacion', 'codigo_html');
+        $this->setParametro('texto_mensaje_confirmacion', 'texto_mensaje_confirmacion', 'codigo_html');
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -100,7 +103,8 @@ class MODCuentasCorreo extends MODbase
         $this->setParametro('carpeta', 'carpeta', 'varchar');
         $this->setParametro('correo', 'correo', 'varchar');
         $this->setParametro('descripcion', 'descripcion', 'varchar');
-
+        $this->setParametro('texto_asunto_confirmacion', 'texto_asunto_confirmacion', 'codigo_html');
+        $this->setParametro('texto_mensaje_confirmacion', 'texto_mensaje_confirmacion', 'codigo_html');
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();

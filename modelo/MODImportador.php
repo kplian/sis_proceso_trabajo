@@ -95,7 +95,8 @@ class MODImportador extends MODbase
         $this->captura('fecha_mod', 'timestamp');
         $this->captura('usr_reg', 'varchar');
         $this->captura('usr_mod', 'varchar');
-
+        $this->captura('texto_asunto_confirmacion', 'text');
+        $this->captura('texto_mensaje_confirmacion', 'text');
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();

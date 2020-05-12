@@ -232,7 +232,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'hora_recepcion_desde',
                         fieldLabel: 'Hora Recepción Desde',
-                        increment: 5,
+                        increment: 30,
                         allowBlank: false,
                         anchor: '50%',
                         gwidth: 100,
@@ -270,7 +270,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     config: {
                         name: 'hora_recepcion_hasta',
                         fieldLabel: 'Hora Recepción Hasta',
-                        increment: 5,
+                        increment: 30,
                         allowBlank: false,
                         anchor: '50%',
                         gwidth: 100,

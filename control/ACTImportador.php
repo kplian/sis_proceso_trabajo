@@ -137,7 +137,9 @@ class ACTImportador extends ACTbase
                                 if ($status == "OK") {
                                     if (array_key_exists('attachments', $mensaje)) {
                                         foreach ($mensaje['attachments'] as $attach) {
-                                            unlink(PATH_DOWNLOADED_ATTACHMENTS . $attach['name']);
+                                            if (file_exists(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'])) {
+                                                unlink(PATH_DOWNLOADED_ATTACHMENTS . $attach['name']);
+                                            }
                                         }
                                     }
                                     $enviados++;
@@ -228,7 +230,7 @@ class ACTImportador extends ACTbase
         $this->objParam->defecto('puntero', 0);
         $this->objParam->parametros_consulta['filtro'] = ' 0 = 0 ';
         $this->objParam->addFiltro("FUNCAR.id_funcionario = " . $id_funcionario);
-        $this->objParam->addFiltro("FUNCAR.fecha_finalizacion >= now() ");
+        $this->objParam->addFiltro(" (FUNCAR.fecha_finalizacion >= now() OR FUNCAR.fecha_finalizacion is null) ");
         $this->objFunc = $this->create('MODImportador');
         return $this->objFunc->obtenerFuncionario($this->objParam);
     }

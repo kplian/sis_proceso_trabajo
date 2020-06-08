@@ -310,13 +310,15 @@ BEGIN
                    dig.id_estado_wf,
                    dig.estado,
                    dig.num_tramite,
-                   dig.id_funcionario
+                   dig.id_funcionario,
+                   dig.ids_funcionarios_asignados
             into
                 v_id_proceso_wf,
                 v_id_estado_wf,
                 v_codigo_estado,
                 v_num_tramite,
-                v_id_funcionario
+                v_id_funcionario,
+                v_ids_funcionarios_asignados
             from protra.taperturas_digitales dig
             where dig.id_apertura_digital = v_parametros.id_apertura_digital;
 

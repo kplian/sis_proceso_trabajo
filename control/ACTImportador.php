@@ -132,8 +132,11 @@ class ACTImportador extends ACTbase
                                         $correo->addAdjunto(PATH_DOWNLOADED_ATTACHMENTS . $filename, $filename);
                                     }
                                 }
+                                $unixTimestamp=strtotime($mensaje['date']);
+                                $date_asunto = date("d/m/Y H:i:s", $unixTimestamp);
+                                $asunto = "Fecha recepción: " . $date_asunto . " - " . $mensaje['subject'];
                                 $correo->addDestinatario($datosFuncionario[0]['email_empresa'], $datosFuncionario[0]['desc_funcionario1']);
-                                $correo->setAsunto($mensaje['subject']);
+                                $correo->setAsunto($asunto);
                                 $correo->setMensajeHtml($mensaje['body']['html']);
                                 $status = $correo->enviarCorreo();
                                 if ($status == "OK") {

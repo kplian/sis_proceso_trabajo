@@ -1277,48 +1277,10 @@ class ImapLibrary
      */
     function downloadAttachment($path = '/tmp/', $uid)
     {
-        $structure = imap_fetchstructure($this->stream, $uid, FT_UID);
-        $attachments = array();
-        if (isset($structure->parts) && count($structure->parts)) {
-            for ($i = 0; $i < count($structure->parts); $i++) {
-                if (strtoupper($structure->parts[$i]->disposition) == 'ATTACHMENT') {
-
-                    $attachments[$i] = array(
-                        'is_attachment' => false,
-                        'filename' => '',
-                        'name' => '',
-                        'attachment' => '');
-
-                    if ($structure->parts[$i]->ifdparameters) {
-                        foreach ($structure->parts[$i]->dparameters as $object) {
-                            if (strtolower($object->attribute) == 'filename') {
-                                $attachments[$i]['is_attachment'] = true;
-                                $attachments[$i]['filename'] = $object->value;
-                            }
-                        }
-                    }
-
-                    if ($structure->parts[$i]->ifparameters) {
-                        foreach ($structure->parts[$i]->parameters as $object) {
-                            if (strtolower($object->attribute) == 'name') {
-                                $attachments[$i]['is_attachment'] = true;
-                                $attachments[$i]['name'] = $object->value;
-                            }
-                        }
-                    }
-
-                    if ($attachments[$i]['is_attachment']) {
-                        $attachments[$i]['attachment'] = imap_fetchbody($this->stream, $uid, $i + 1, FT_UID | FT_PEEK);
-                        if ($structure->parts[$i]->encoding == 3) { // 3 = BASE64
-                            $attachments[$i]['attachment'] = base64_decode($attachments[$i]['attachment']);
-                        } elseif ($structure->parts[$i]->encoding == 4) { // 4 = QUOTED-PRINTABLE
-                            $attachments[$i]['attachment'] = quoted_printable_decode($attachments[$i]['attachment']);
-                        }
-                    }
-
-                    file_put_contents($path . $attachments[$i]['filename'], $attachments[$i]['attachment']);
-
-                }
+        $attachments = $this->_get_attachments($uid, imap_fetchstructure($this->stream, $uid, FT_UID));
+        if (isset($attachments) && count($attachments) > 0) {
+            foreach ($attachments as $attachment) {
+                file_put_contents($path . $attachment['name'], $attachments['content']);
             }
         }
     }

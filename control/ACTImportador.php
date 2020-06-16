@@ -138,6 +138,7 @@ class ACTImportador extends ACTbase
                                 $correo->addDestinatario($datosFuncionario[0]['email_empresa'], $datosFuncionario[0]['desc_funcionario1']);
                                 $correo->setAsunto($asunto);
                                 $correo->setMensajeHtml($mensaje['body']['html']);
+                                $correo->setMensaje($mensaje['body']['plain']);
                                 $status = $correo->enviarCorreo();
                                 if ($status == "OK") {
                                     if (array_key_exists('attachments', $mensaje)) {
@@ -251,8 +252,10 @@ class ACTImportador extends ACTbase
         $correo->addDestinatario($mensaje['from']['email'], $mensaje['from']['name']);
         $correo->setAsunto($asunto);
         $correo->setMensajeHtml($texto_mensaje);
+        $correo->setMensaje($texto_mensaje);
         $correo->setUsuario($cuentaCorreo['usuario']);
         $correo->setPassword($cuentaCorreo['contrasena']);
+        $correo->setDefaultPlantilla();
         return $correo->enviarCorreo();
     }
 }

@@ -252,6 +252,7 @@ class ACTImportador extends ACTbase
         $correo->addDestinatario($mensaje['from']['email'], $mensaje['from']['name']);
         $correo->setAsunto($asunto);
         $correo->setMensajeHtml($texto_mensaje);
+        $correo->setMensaje($texto_mensaje);
         $correo->setUsuario($cuentaCorreo['usuario']);
         $correo->setPassword($cuentaCorreo['contrasena']);
         $correo->setDefaultPlantilla();

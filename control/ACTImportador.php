@@ -51,7 +51,7 @@ class ACTImportador extends ACTbase
                     $mensajes = $imapLibrary->get_messages($mails);
                     if ($cantidad_correos > 0) {
                         foreach ($mensajes as $mensaje) {
-                            $unixTimestamp=strtotime($mensaje['date']);
+                            $unixTimestamp = strtotime($mensaje['date']);
                             $date = date("Y-m-d H:i:s.u", $unixTimestamp);
                             $date_cmp = new DateTime($date);
                             if ($date_cmp >= $desde_fecha && $date_cmp <= $hasta_fecha) {
@@ -120,6 +120,11 @@ class ACTImportador extends ACTbase
                 $mensajes = $imapLibrary->get_messages($mails);
                 if ($cantidad_correos) {
                     foreach ($mensajes as $mensaje) {
+                        if (array_key_exists('attachments', $mensaje)) {
+                            foreach ($mensaje['attachments'] as $attach) {
+                                file_put_contents(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'], $attach['content']);
+                            }
+                        }
                         foreach ($ids_funcionarios as $id) {
                             $rsFuncionario = $this->obtenerFuncionario($id);
                             if ($rsFuncionario->getTipo() == 'EXITO') {
@@ -127,12 +132,10 @@ class ACTImportador extends ACTbase
                                 $correo = new CorreoExterno();
                                 if (array_key_exists('attachments', $mensaje)) {
                                     foreach ($mensaje['attachments'] as $attach) {
-                                        $filename = $attach['name'];
-                                        $imapLibrary->downloadAttachment(PATH_DOWNLOADED_ATTACHMENTS, $mensaje['uid']);
-                                        $correo->addAdjunto(PATH_DOWNLOADED_ATTACHMENTS . $filename, $filename);
+                                        $correo->addAdjunto(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'], $attach['name']);
                                     }
                                 }
-                                $unixTimestamp=strtotime($mensaje['date']);
+                                $unixTimestamp = strtotime($mensaje['date']);
                                 $date_asunto = date("d/m/Y H:i:s", $unixTimestamp);
                                 $asunto = "Fecha recepción: " . $date_asunto . " - " . $mensaje['subject'];
                                 $correo->addDestinatario($datosFuncionario[0]['email_empresa'], $datosFuncionario[0]['desc_funcionario1']);
@@ -141,14 +144,14 @@ class ACTImportador extends ACTbase
                                 $correo->setMensaje($mensaje['body']['plain']);
                                 $status = $correo->enviarCorreo();
                                 if ($status == "OK") {
-                                    if (array_key_exists('attachments', $mensaje)) {
-                                        foreach ($mensaje['attachments'] as $attach) {
-                                            if (file_exists(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'])) {
-                                                unlink(PATH_DOWNLOADED_ATTACHMENTS . $attach['name']);
-                                            }
-                                        }
-                                    }
                                     $enviados++;
+                                }
+                            }
+                        }
+                        if (array_key_exists('attachments', $mensaje)) {
+                            foreach ($mensaje['attachments'] as $attach) {
+                                if (file_exists(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'])) {
+                                    unlink(PATH_DOWNLOADED_ATTACHMENTS . $attach['name']);
                                 }
                             }
                         }

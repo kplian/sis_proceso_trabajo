@@ -140,8 +140,8 @@ class ACTImportador extends ACTbase
                                 $asunto = "Fecha recepción: " . $date_asunto . " - " . $mensaje['subject'];
                                 $correo->addDestinatario($datosFuncionario[0]['email_empresa'], $datosFuncionario[0]['desc_funcionario1']);
                                 $correo->setAsunto($asunto);
-                                $correo->setMensajeHtml($mensaje['body']['html']);
-                                $correo->setMensaje($mensaje['body']['plain']);
+                                $correo->setMensajeHtml(utf8_encode($mensaje['body']['html']));
+                                $correo->setMensaje(utf8_encode($mensaje['body']['plain']));
                                 $status = $correo->enviarCorreo();
                                 if ($status == "OK") {
                                     $enviados++;

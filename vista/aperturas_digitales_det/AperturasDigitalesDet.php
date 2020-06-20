@@ -142,7 +142,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 100,
                         format: 'd/m/Y H:i',
                         renderer: function (value, p, record) {
-                            return value ? new Date(value).dateFormat('d/m/Y H:i') : ''
+                            return value ? new Date(value).dateFormat('d/m/Y H:i:s') : ''
                         }
                     },
                     type: 'DateField',

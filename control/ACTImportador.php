@@ -51,16 +51,17 @@ class ACTImportador extends ACTbase
                     $mensajes = $imapLibrary->get_messages($mails);
                     if ($cantidad_correos > 0) {
                         foreach ($mensajes as $mensaje) {
-                            $unixTimestamp = strtotime($mensaje['date']);
-                            $date = date("Y-m-d H:i:s.u", $unixTimestamp);
+                            $date = date("Y-m-d H:i:s.u", $mensaje['udate']);
+                            $uTimezone = new DateTimeZone('America/La_Paz');
                             $date_cmp = new DateTime($date);
+                            $date_cmp->setTimeZone($uTimezone);
                             if ($date_cmp >= $desde_fecha && $date_cmp <= $hasta_fecha) {
                                 $this->objParam->addParametro('estado_reg', 'activo');
                                 $this->objParam->addParametro('uid_email', $mensaje['id']);
                                 $this->objParam->addParametro('numero_email', $mensaje['uid']);
                                 $this->objParam->addParametro('remitente_email', $mensaje['from']['email']);
                                 $this->objParam->addParametro('asunto_email', $mensaje['subject']);
-                                $this->objParam->addParametro('fecha_recepcion_email', $date);
+                                $this->objParam->addParametro('fecha_recepcion_email', $date_cmp->format('Y-m-d H:i:s'));
                                 $this->objParam->addParametro('id_apertura_digital', $apertura['id_apertura_digital']);
                                 $aperturaDet = $this->create('MODImportador');
                                 $rs = $aperturaDet->insertarAperturasDigitalesDet($this->objParam);

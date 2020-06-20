@@ -116,7 +116,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'adigd.remitente_email', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: true
+                    form: true,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -131,7 +132,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'adigd.asunto_email', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: true
+                    form: true,
+                    bottom_filter: true,
                 },
                 {
                     config: {

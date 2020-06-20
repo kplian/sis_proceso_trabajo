@@ -96,7 +96,9 @@ BEGIN
 			v_consulta:='select count(id_apertura_digital)
 					    from protra.taperturas_digitales dig
 					    inner join segu.tusuario usu1 on usu1.id_usuario = dig.id_usuario_reg
+			            inner join protra.tcuentas_correo cueco on cueco.id_cuenta_correo = dig.id_cuenta_correo
 						left join segu.tusuario usu2 on usu2.id_usuario = dig.id_usuario_mod
+				        left join orga.vfuncionario fun_ad on fun_ad.id_funcionario = dig.id_funcionario
 					    where ';
 			
 			--Definicion de la respuesta		    

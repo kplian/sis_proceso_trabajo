@@ -59,7 +59,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'dig.num_tramite', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: false
+                    form: false,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -74,7 +75,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'dig.codigo', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: false
+                    form: false,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -89,7 +91,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'dig.estado', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: false
+                    form: false,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -104,7 +107,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'fun_ad.desc_funcionario1', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: false
+                    form: false,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -183,7 +187,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'cueco.descripcion#cueco.correo', type: 'string'},
                     grid: false,
                     form: true,
-                    bottom_filter: true
+                    bottom_filter: false
                 },
                 {
                     config: {
@@ -203,7 +207,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type: 'ComboRec',
                     id_grupo: 2,
-                    filters: {pfiltro: 'fun.desc_funcionario1', type: 'string'},
+                    filters: {pfiltro: 'fun_ad.desc_funcionario1', type: 'string'},
                     bottom_filter: true,
                     grid: false,
                     form: true
@@ -315,6 +319,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     type: 'Field',
                     filters: {pfiltro: 'cueco.correo', type: 'string'},
                     id_grupo: 1,
+                    bottom_filter: true,
                     grid: true,
                     form: false
                 },
@@ -330,6 +335,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     type: 'Field',
                     filters: {pfiltro: 'cueco.descripcion', type: 'string'},
                     id_grupo: 1,
+                    bottom_filter: true,
                     grid: true,
                     form: false
                 },

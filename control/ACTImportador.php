@@ -130,44 +130,46 @@ class ACTImportador extends ACTbase
                     if ($cantidad_correos) {
                         foreach ($mensajes as $mensaje) {
                             try {
-                                if (array_key_exists('attachments', $mensaje) && is_array($mensaje['attachments'])) {
-                                    foreach ($mensaje['attachments'] as $attach) {
-                                        file_put_contents(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'], $attach['content']);
+                                if (is_array($mensaje)) {
+                                    if (array_key_exists('attachments', $mensaje)) {
+                                        foreach ($mensaje['attachments'] as $attach) {
+                                            file_put_contents(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'], $attach['content']);
+                                        }
                                     }
-                                }
-                                $correo = new CorreoExterno();
-                                if (array_key_exists('attachments', $mensaje) && is_array($mensaje['attachments'])) {
-                                    foreach ($mensaje['attachments'] as $attach) {
-                                        $correo->addAdjunto(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'], $attach['name']);
+                                    $correo = new CorreoExterno();
+                                    if (array_key_exists('attachments', $mensaje)) {
+                                        foreach ($mensaje['attachments'] as $attach) {
+                                            $correo->addAdjunto(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'], $attach['name']);
+                                        }
                                     }
-                                }
-                                $date = date("Y-m-d H:i:s.u", $mensaje['udate']);
-                                $uTimezone = new DateTimeZone('America/La_Paz');
-                                $date_cmp = new DateTime($date);
-                                $date_cmp->setTimeZone($uTimezone);
-                                $date_asunto = $date_cmp->format('d/m/Y H:i:s');
-                                $asunto = "Fecha recepción: " . $date_asunto . " - " . $mensaje['subject'];
-                                $mensaje_html = $mensaje['body']['html'];
-                                $mensaje_html .= '<br />' . $mensaje['from']['email'] . ' [' . $mensaje['from']['name'] . ']';
-                                $mensaje_plain = $mensaje['body']['plain'];
-                                $mensaje_plain .= '\n\r' . $mensaje['from']['email'] . ' [' . $mensaje['from']['name'] . ']';
-                                $correo->addDestinatario($datosApertura[0]['email_empresa'], $datosApertura[0]['desc_funcionario1']);
-                                if (count($emails) > 0) {
-                                    foreach ($emails as $key => $email) {
-                                        $correo->addDestinatario($emails[$key], $nombres[$key]);
+                                    $date = date("Y-m-d H:i:s.u", $mensaje['udate']);
+                                    $uTimezone = new DateTimeZone('America/La_Paz');
+                                    $date_cmp = new DateTime($date);
+                                    $date_cmp->setTimeZone($uTimezone);
+                                    $date_asunto = $date_cmp->format('d/m/Y H:i:s');
+                                    $asunto = "Fecha recepción: " . $date_asunto . " - " . $mensaje['subject'];
+                                    $mensaje_html = $mensaje['body']['html'];
+                                    $mensaje_html .= '<br />' . $mensaje['from']['email'] . ' [' . $mensaje['from']['name'] . ']';
+                                    $mensaje_plain = $mensaje['body']['plain'];
+                                    $mensaje_plain .= '\n\r' . $mensaje['from']['email'] . ' [' . $mensaje['from']['name'] . ']';
+                                    $correo->addDestinatario($datosApertura[0]['email_empresa'], $datosApertura[0]['desc_funcionario1']);
+                                    if (count($emails) > 0) {
+                                        foreach ($emails as $key => $email) {
+                                            $correo->addDestinatario($emails[$key], $nombres[$key]);
+                                        }
                                     }
-                                }
-                                $correo->setAsunto($asunto);
-                                $correo->setMensajeHtml(utf8_encode($mensaje_html));
-                                $correo->setMensaje(utf8_encode($mensaje_plain));
-                                $status = $correo->enviarCorreo();
-                                if ($status == "OK") {
-                                    $enviados++;
-                                }
-                                if (array_key_exists('attachments', $mensaje) && is_array($mensaje['attachments'])) {
-                                    foreach ($mensaje['attachments'] as $attach) {
-                                        if (file_exists(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'])) {
-                                            unlink(PATH_DOWNLOADED_ATTACHMENTS . $attach['name']);
+                                    $correo->setAsunto($asunto);
+                                    $correo->setMensajeHtml(utf8_encode($mensaje_html));
+                                    $correo->setMensaje(utf8_encode($mensaje_plain));
+                                    $status = $correo->enviarCorreo();
+                                    if ($status == "OK") {
+                                        $enviados++;
+                                    }
+                                    if (array_key_exists('attachments', $mensaje)) {
+                                        foreach ($mensaje['attachments'] as $attach) {
+                                            if (file_exists(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'])) {
+                                                unlink(PATH_DOWNLOADED_ATTACHMENTS . $attach['name']);
+                                            }
                                         }
                                     }
                                 }

@@ -477,12 +477,17 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             bdel: true,
             bsave: true,
-            tabsouth: [{
-                url: '../../../sis_proceso_trabajo/vista/aperturas_digitales_det/AperturasDigitalesDet.php',
-                title: 'Detalle',
-                height: '40%',
-                cls: 'AperturasDigitalesDet'
-            }],
+        tabsouth: [{
+            url: '../../../sis_proceso_trabajo/vista/aperturas_digitales_det/AperturasDigitalesDetAceptados.php',
+            title: 'Aceptados',
+            height: '40%',
+            cls: 'AperturasDigitalesDetAceptados'
+        }, {
+            url: '../../../sis_proceso_trabajo/vista/aperturas_digitales_det/AperturasDigitalesDetNoAceptados.php',
+            title: 'No Aceptados',
+            height: '40%',
+            cls: 'AperturasDigitalesDetNoAceptados'
+        }],
             liberaMenu: function () {
                 var tb = Phx.vista.AperturasDigitales.superclass.liberaMenu.call(this);
                 if (tb) {

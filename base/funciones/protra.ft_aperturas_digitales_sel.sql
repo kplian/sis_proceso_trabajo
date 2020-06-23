@@ -66,12 +66,13 @@ BEGIN
 			            fun_ad.desc_funcionario1,
 			            dig.id_funcionario,
 			            dig.fecha_apertura,
-			            dig.ids_funcionarios_asignados
+			            dig.ids_funcionarios_asignados,
+			            fun_ad.email_empresa
 						from protra.taperturas_digitales dig
 						inner join segu.tusuario usu1 on usu1.id_usuario = dig.id_usuario_reg
 			            inner join protra.tcuentas_correo cueco on cueco.id_cuenta_correo = dig.id_cuenta_correo
 						left join segu.tusuario usu2 on usu2.id_usuario = dig.id_usuario_mod
-				        left join orga.vfuncionario fun_ad on fun_ad.id_funcionario = dig.id_funcionario
+				        left join orga.vfuncionario_cargo fun_ad on fun_ad.id_funcionario = dig.id_funcionario
 			            where  ';
 			--Definicion de la respuesta
 			v_consulta:=v_consulta||v_parametros.filtro;

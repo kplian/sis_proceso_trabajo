@@ -53,6 +53,7 @@ class MODAperturasDigitales extends MODbase
         $this->captura('id_funcionario', 'int4');
         $this->captura('fecha_apertura', 'timestamp');
         $this->captura('ids_funcionarios_asignados', 'integer[]');
+        $this->captura('email_empresa', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

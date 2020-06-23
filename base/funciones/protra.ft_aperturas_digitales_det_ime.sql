@@ -57,7 +57,8 @@ BEGIN
 			id_usuario_ai,
 			usuario_ai,
 			id_usuario_mod,
-			fecha_mod
+			fecha_mod,
+            aceptado
           	) values(
 			'activo',
 			'',
@@ -72,8 +73,8 @@ BEGIN
 			v_parametros._id_usuario_ai,
 			v_parametros._nombre_usuario_ai,
 			null,
-			null
-							
+			null,
+			v_parametros.aceptado
 			
 			
 			)RETURNING id_apertura_digital_det into v_id_apertura_digital_det;

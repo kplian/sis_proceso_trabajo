@@ -54,6 +54,7 @@ class MODAperturasDigitales extends MODbase
         $this->captura('fecha_apertura', 'timestamp');
         $this->captura('ids_funcionarios_asignados', 'integer[]');
         $this->captura('email_empresa', 'varchar');
+        $this->captura('codigo_proceso', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -79,6 +80,7 @@ class MODAperturasDigitales extends MODbase
         $this->setParametro('fecha_recepcion_hasta', 'fecha_recepcion_hasta', 'date');
         $this->setParametro('hora_recepcion_hasta', 'hora_recepcion_hasta', 'time');
         $this->setParametro('id_cuenta_correo', 'id_cuenta_correo', 'int4');
+        $this->setParametro('codigo_proceso', 'codigo_proceso', 'varchar');
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -104,6 +106,7 @@ class MODAperturasDigitales extends MODbase
         $this->setParametro('fecha_recepcion_hasta', 'fecha_recepcion_hasta', 'date');
         $this->setParametro('hora_recepcion_hasta', 'hora_recepcion_hasta', 'time');
         $this->setParametro('id_cuenta_correo', 'id_cuenta_correo', 'int4');
+        $this->setParametro('codigo_proceso', 'codigo_proceso', 'varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();

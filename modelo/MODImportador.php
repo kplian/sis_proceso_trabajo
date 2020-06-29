@@ -57,6 +57,7 @@ class MODImportador extends MODbase
         $this->captura('fecha_apertura', 'timestamp');
         $this->captura('ids_funcionarios_asignados', 'integer[]');
         $this->captura('email_empresa', 'varchar');
+        $this->captura('codigo_proceso', 'varchar');
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();

@@ -39,41 +39,46 @@ class ACTImportador extends ACTbase
                         continue;
                     }
                     $imapLibrary->select_folder($datos1[0]['carpeta']);
+                    $codigo = !empty($apertura['codigo']) ? $apertura['codigo'] : '';
+                    $codigo_proceso = !empty($apertura['codigo_proceso']) ? $apertura['codigo_proceso'] : '';
                     $desde_fecha = new DateTime($apertura['fecha_recepcion_desde'] . ' ' . $apertura['hora_recepcion_desde']);
                     $hasta_fecha = new DateTime($apertura['fecha_recepcion_hasta'] . ' ' . $apertura['hora_recepcion_hasta']);
 
-                    $criteria = "SUBJECT " . $apertura['codigo'];
-                    $criteria .= " UNSEEN";
-
+                    $criteria = "SINCE \"" . date('D, d M Y', $desde_fecha->getTimestamp()) . "\" UNSEEN";
                     $mails = $imapLibrary->search($criteria);
-                    $cantidad_correos = count($mails);
-                    $importados = 0;
-                    $mensajes = $imapLibrary->get_messages($mails);
-                    if ($cantidad_correos > 0) {
-                        foreach ($mensajes as $mensaje) {
-                            $date = date("Y-m-d H:i:s.u", $mensaje['udate']);
-                            $uTimezone = new DateTimeZone('America/La_Paz');
-                            $date_cmp = new DateTime($date);
-                            $date_cmp->setTimeZone($uTimezone);
-                            if ($date_cmp >= $desde_fecha && $date_cmp <= $hasta_fecha) {
-                                $aceptado = 'si';
-                            } else {
-                                $aceptado = 'no';
-                            }
-                            $this->objParam->addParametro('estado_reg', 'activo');
-                            $this->objParam->addParametro('uid_email', $mensaje['id']);
-                            $this->objParam->addParametro('numero_email', $mensaje['uid']);
-                            $this->objParam->addParametro('remitente_email', $mensaje['from']['email']);
-                            $this->objParam->addParametro('asunto_email', $mensaje['subject']);
-                            $this->objParam->addParametro('fecha_recepcion_email', $date_cmp->format('Y-m-d H:i:s'));
-                            $this->objParam->addParametro('id_apertura_digital', $apertura['id_apertura_digital']);
-                            $this->objParam->addParametro('aceptado', $aceptado);
-                            $aperturaDet = $this->create('MODImportador');
-                            $rs = $aperturaDet->insertarAperturasDigitalesDet($this->objParam);
-                            if ($rs->getTipo() == 'EXITO') {
-                                $importados++;
-                                if ($aceptado == 'si') {
-                                    $this->confirmarRecepcion($apertura, $datos1[0], $mensaje);
+
+                    if (is_array($mails) && count($mails) > 0) {
+                        $importados = 0;
+                        $mensajes = $imapLibrary->get_messages($mails);
+                        if (count($mensajes) > 0) {
+                            $mensajes = array_filter($mensajes, function ($msj) use ($codigo, $codigo_proceso) {
+                                return (stripos($msj['subject'], $codigo) !== FALSE || stripos($msj['subject'], $codigo_proceso) !== FALSE);
+                            });
+                            foreach ($mensajes as $mensaje) {
+                                $date = date("Y-m-d H:i:s.u", $mensaje['udate']);
+                                $uTimezone = new DateTimeZone('America/La_Paz');
+                                $date_cmp = new DateTime($date);
+                                $date_cmp->setTimeZone($uTimezone);
+                                if ($date_cmp >= $desde_fecha && $date_cmp <= $hasta_fecha) {
+                                    $aceptado = 'si';
+                                } else {
+                                    $aceptado = 'no';
+                                }
+                                $this->objParam->addParametro('estado_reg', 'activo');
+                                $this->objParam->addParametro('uid_email', $mensaje['id']);
+                                $this->objParam->addParametro('numero_email', $mensaje['uid']);
+                                $this->objParam->addParametro('remitente_email', $mensaje['from']['email']);
+                                $this->objParam->addParametro('asunto_email', $mensaje['subject']);
+                                $this->objParam->addParametro('fecha_recepcion_email', $date_cmp->format('Y-m-d H:i:s'));
+                                $this->objParam->addParametro('id_apertura_digital', $apertura['id_apertura_digital']);
+                                $this->objParam->addParametro('aceptado', $aceptado);
+                                $aperturaDet = $this->create('MODImportador');
+                                $rs = $aperturaDet->insertarAperturasDigitalesDet($this->objParam);
+                                if ($rs->getTipo() == 'EXITO') {
+                                    $importados++;
+                                    if ($aceptado == 'si') {
+                                        $this->confirmarRecepcion($apertura, $datos1[0], $mensaje);
+                                    }
                                 }
                             }
                         }
@@ -83,18 +88,10 @@ class ACTImportador extends ACTbase
 
         }
 
-        if ($importados > 0) {
-            $mensajeExito = new Mensaje();
-            $mensajeExito->setMensaje('EXITO', 'ACTAperturasDigitalesDet.php', 'Correos Importados Verifiqué su información', 'Se importaron ' . $cantidad_correos . ' correos!', '', '', '', '');
-            $this->res = $mensajeExito;
-            $this->res->imprimirRespuesta($this->res->generarJson());
-        } else {
-            $mensajeExito = new Mensaje();
-            $mensajeExito->setMensaje('ERROR', 'ACTAperturasDigitalesDet.php', 'No hay correos en su bandeja para importar', 'No se importaron elementos!', '', '', '', '');
-            $this->res = $mensajeExito;
-            $this->res->imprimirRespuesta($this->res->generarJson());
-        }
-
+        $mensajeExito = new Mensaje();
+        $mensajeExito->setMensaje('EXITO', 'ACTAperturasDigitalesDet.php', 'Importaci&oacute;n finalizada!', 'Importaci&oacute;n finalizada!', '', '', '', '');
+        $this->res = $mensajeExito;
+        $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
     function EnviarCorreos()
@@ -269,16 +266,15 @@ class ACTImportador extends ACTbase
     {
         $asunto = $cuentaCorreo['texto_asunto_confirmacion'];
         $texto_mensaje = $cuentaCorreo['texto_mensaje_confirmacion'];
-        $asunto = str_replace('CODIGO_APERTURA', $apertura['codigo'], $asunto);
+        $asunto = str_replace('CODIGO_APERTURA', $apertura['codigo_proceso'], $asunto);
         $texto_mensaje = str_replace('NOMBRE_REMITENTE', $mensaje['from']['name'], $texto_mensaje);
-        $texto_mensaje = str_replace('CODIGO_APERTURA', $apertura['codigo'], $texto_mensaje);
+        $texto_mensaje = str_replace('CODIGO_APERTURA', $apertura['codigo_proceso'], $texto_mensaje);
         $correo = new CorreoExterno();
         $correo->addDestinatario($mensaje['from']['email'], $mensaje['from']['name']);
+        $correo->addDestinatario($apertura['email_empresa'], $apertura['desc_funcionario1']);
         $correo->setAsunto($asunto);
         $correo->setMensajeHtml($texto_mensaje);
         $correo->setMensaje($texto_mensaje);
-        $correo->setUsuario($cuentaCorreo['usuario']);
-        $correo->setPassword($cuentaCorreo['contrasena']);
         $correo->setDefaultPlantilla();
         return $correo->enviarCorreo();
     }

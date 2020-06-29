@@ -74,8 +74,6 @@ BEGIN
                     null,
                     null,
                     v_parametros.aceptado)
-            ON conflict (uid_email)
-                do update set aceptado = v_parametros.aceptado
             RETURNING id_apertura_digital_det into v_id_apertura_digital_det;
 
             --Definicion de la respuesta

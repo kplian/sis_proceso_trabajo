@@ -264,11 +264,16 @@ class ACTImportador extends ACTbase
 
     function confirmarRecepcion($apertura, $cuentaCorreo, $mensaje)
     {
+        if (!empty($apertura['codigo_proceso'])) {
+            $codigo = $apertura['codigo_proceso'];
+        } else {
+            $codigo = $apertura['codigo'];
+        }
         $asunto = $cuentaCorreo['texto_asunto_confirmacion'];
         $texto_mensaje = $cuentaCorreo['texto_mensaje_confirmacion'];
-        $asunto = str_replace('CODIGO_APERTURA', $apertura['codigo_proceso'], $asunto);
+        $asunto = str_replace('CODIGO_APERTURA', $codigo, $asunto);
         $texto_mensaje = str_replace('NOMBRE_REMITENTE', $mensaje['from']['name'], $texto_mensaje);
-        $texto_mensaje = str_replace('CODIGO_APERTURA', $apertura['codigo_proceso'], $texto_mensaje);
+        $texto_mensaje = str_replace('CODIGO_APERTURA', $codigo, $texto_mensaje);
         $correo = new CorreoExterno();
         $correo->addDestinatario($mensaje['from']['email'], $mensaje['from']['name']);
         $correo->addDestinatario($apertura['email_empresa'], $apertura['desc_funcionario1']);

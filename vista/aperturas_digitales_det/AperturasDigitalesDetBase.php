@@ -1,7 +1,7 @@
 <?php
 /**
  * @package pXP
- * @file AperturasDigitalesDet.php
+ * @file AperturasDigitalesDetBase.php
  * @author  (valvarado)
  * @date 21-04-2020 23:09:51
  * @description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
@@ -13,12 +13,12 @@
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-    Phx.vista.AperturasDigitalesDet = Ext.extend(Phx.gridInterfaz, {
+    Phx.vista.AperturasDigitalesDetBase = Ext.extend(Phx.gridInterfaz, {
 
             constructor: function (config) {
                 this.maestro = config.maestro;
                 //llama al constructor de la clase padre
-                Phx.vista.AperturasDigitalesDet.superclass.constructor.call(this, config);
+                Phx.vista.AperturasDigitalesDetBase.superclass.constructor.call(this, config);
                 this.init();
             },
 
@@ -116,7 +116,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'adigd.remitente_email', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: true
+                    form: true,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -131,7 +132,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'adigd.asunto_email', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: true
+                    form: true,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -142,7 +144,7 @@ header("content-type: text/javascript; charset=UTF-8");
                         gwidth: 100,
                         format: 'd/m/Y H:i',
                         renderer: function (value, p, record) {
-                            return value ? new Date(value).dateFormat('d/m/Y H:i') : ''
+                            return value ? new Date(value).dateFormat('d/m/Y H:i:s') : ''
                         }
                     },
                     type: 'DateField',
@@ -248,7 +250,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     form: false
                 }
             ],
-            nombreVista: 'AperturasDigitalesDet',
+            nombreVista: 'AperturasDigitalesDetBase',
             tam_pag: 50,
             title: 'Aperturas digitales Detalle',
             ActSave: '../../sis_proceso_trabajo/control/AperturasDigitalesDet/insertarAperturasDigitalesDet',
@@ -286,12 +288,11 @@ header("content-type: text/javascript; charset=UTF-8");
             preparaMenu: function (n) {
                 var data = this.getSelectedData();
                 var tb = this.tbar;
-                console.log("AD", this.maestro.estado);
-                Phx.vista.AperturasDigitalesDet.superclass.preparaMenu.call(this, n);
+                Phx.vista.AperturasDigitalesDetBase.superclass.preparaMenu.call(this, n);
                 return tb
             },
             liberaMenu: function () {
-                var tb = Phx.vista.AperturasDigitalesDet.superclass.liberaMenu.call(this);
+                var tb = Phx.vista.AperturasDigitalesDetBase.superclass.liberaMenu.call(this);
                 return tb
             },
             onReloadPage: function (m) {

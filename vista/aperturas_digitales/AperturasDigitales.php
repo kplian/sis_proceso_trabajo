@@ -59,7 +59,24 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'dig.num_tramite', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: false
+                    form: false,
+                    bottom_filter: true,
+                },
+                {
+                    config: {
+                        name: 'codigo_proceso',
+                        fieldLabel: 'C&oacute;digo Proceso',
+                        allowBlank: true,
+                        anchor: '80%',
+                        gwidth: 100,
+                        maxLength: 100
+                    },
+                    type: 'TextField',
+                    filters: {pfiltro: 'dig.codigo_proceso', type: 'string'},
+                    id_grupo: 1,
+                    grid: true,
+                    form: true,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -74,7 +91,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'dig.codigo', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: false
+                    form: false,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -89,7 +107,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'dig.estado', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: false
+                    form: false,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -104,7 +123,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'fun_ad.desc_funcionario1', type: 'string'},
                     id_grupo: 1,
                     grid: true,
-                    form: false
+                    form: false,
+                    bottom_filter: true,
                 },
                 {
                     config: {
@@ -183,7 +203,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     filters: {pfiltro: 'cueco.descripcion#cueco.correo', type: 'string'},
                     grid: false,
                     form: true,
-                    bottom_filter: true
+                    bottom_filter: false
                 },
                 {
                     config: {
@@ -203,7 +223,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     },
                     type: 'ComboRec',
                     id_grupo: 2,
-                    filters: {pfiltro: 'fun.desc_funcionario1', type: 'string'},
+                    filters: {pfiltro: 'fun_ad.desc_funcionario1', type: 'string'},
                     bottom_filter: true,
                     grid: false,
                     form: true
@@ -315,6 +335,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     type: 'Field',
                     filters: {pfiltro: 'cueco.correo', type: 'string'},
                     id_grupo: 1,
+                    bottom_filter: true,
                     grid: true,
                     form: false
                 },
@@ -330,6 +351,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     type: 'Field',
                     filters: {pfiltro: 'cueco.descripcion', type: 'string'},
                     id_grupo: 1,
+                    bottom_filter: true,
                     grid: true,
                     form: false
                 },
@@ -463,7 +485,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 {name: 'num_tramite', type: 'string'},
                 {name: 'desc_funcionario1', type: 'string'},
                 {name: 'id_funcionario', type: 'numeric'},
-                {name: 'fecha_apertura', type: 'date'}
+                {name: 'fecha_apertura', type: 'date'},
+                {name: 'codigo_proceso', type: 'string'}
             ],
             sortInfo: {
                 field: 'id_apertura_digital',
@@ -471,12 +494,17 @@ header("content-type: text/javascript; charset=UTF-8");
             },
             bdel: true,
             bsave: true,
-            tabsouth: [{
-                url: '../../../sis_proceso_trabajo/vista/aperturas_digitales_det/AperturasDigitalesDet.php',
-                title: 'Detalle',
-                height: '40%',
-                cls: 'AperturasDigitalesDet'
-            }],
+        tabsouth: [{
+            url: '../../../sis_proceso_trabajo/vista/aperturas_digitales_det/AperturasDigitalesDetAceptados.php',
+            title: 'Aceptados',
+            height: '40%',
+            cls: 'AperturasDigitalesDetAceptados'
+        }, {
+            url: '../../../sis_proceso_trabajo/vista/aperturas_digitales_det/AperturasDigitalesDetNoAceptados.php',
+            title: 'No Aceptados',
+            height: '40%',
+            cls: 'AperturasDigitalesDetNoAceptados'
+        }],
             liberaMenu: function () {
                 var tb = Phx.vista.AperturasDigitales.superclass.liberaMenu.call(this);
                 if (tb) {
@@ -522,7 +550,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             this.getBoton('ant_estado').enable();
                             this.getBoton('importar_correos').enable();
                             this.getBoton('enviar_correos').disable();
-                            this.getBoton('edit').disable();
+                            this.getBoton('edit').enable();
                             this.getBoton('del').disable();
                             this.getBoton('btnChequeoDocumentosWf').disable();
                             break;

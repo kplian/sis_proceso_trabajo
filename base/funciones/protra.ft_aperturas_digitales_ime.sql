@@ -64,6 +64,7 @@ DECLARE
     v_fecha_hora_desde           timestamp;
     v_fecha_hora_hasta           timestamp;
     v_fecha_hora_apertura        timestamp;
+    v_codigo_proceso             varchar;
 BEGIN
 
     v_nombre_funcion = 'protra.ft_aperturas_digitales_ime';
@@ -164,7 +165,8 @@ BEGIN
                                                     id_estado_wf,
                                                     estado,
                                                     num_tramite,
-                                                    id_funcionario)
+                                                    id_funcionario,
+                                                    codigo_proceso)
             values ('activo',
                     v_parametros.fecha_recepcion_desde,
                     v_parametros.hora_recepcion_desde,
@@ -182,7 +184,8 @@ BEGIN
                     v_id_estado_wf,
                     v_codigo_estado,
                     v_num_tramite,
-                    v_parametros.id_funcionario)
+                    v_parametros.id_funcionario,
+                    v_parametros.codigo_proceso)
             RETURNING id_apertura_digital into v_id_apertura_digital;
 
             --Definicion de la respuesta
@@ -207,14 +210,21 @@ BEGIN
 
         begin
             --Sentencia de la modificacion
-            select dig.estado
-            into v_estado
+            select dig.estado, dig.codigo_proceso
+            into v_estado, v_codigo_proceso
             from protra.taperturas_digitales dig
             where dig.id_apertura_digital = v_parametros.id_apertura_digital;
 
             if (v_estado not in ('pendiente', 'borrador')) then
                 v_resp = pxp.f_agrega_clave(v_resp, 'mensaje',
                                             'No es posible modificar una Apertura Digital en el estado ' || v_estado);
+                raise exception '%', v_resp;
+            end if;
+
+            if (v_codigo_proceso != v_parametros.codigo_proceso AND v_estado not in ('borrador')) then
+                v_resp = pxp.f_agrega_clave(v_resp, 'mensaje',
+                                            'No es posible modificar el campo Codigo Proceso de una Apertura Digital en el estado ' ||
+                                            v_estado);
                 raise exception '%', v_resp;
             end if;
 
@@ -239,7 +249,8 @@ BEGIN
                 fecha_mod             = now(),
                 id_usuario_ai         = v_parametros._id_usuario_ai,
                 usuario_ai            = v_parametros._nombre_usuario_ai,
-                id_funcionario        = v_parametros.id_funcionario
+                id_funcionario        = v_parametros.id_funcionario,
+                codigo_proceso        = v_parametros.codigo_proceso
             where id_apertura_digital = v_parametros.id_apertura_digital;
 
             --Definicion de la respuesta
@@ -262,6 +273,16 @@ BEGIN
 
         begin
             --Sentencia de la eliminacion
+            select dig.estado, dig.codigo_proceso
+            into v_estado, v_codigo_proceso
+            from protra.taperturas_digitales dig
+            where dig.id_apertura_digital = v_parametros.id_apertura_digital;
+            if (v_estado not in ('borrador')) then
+                v_resp = pxp.f_agrega_clave(v_resp, 'mensaje',
+                                            'No es posible eliminar una Apertura Digital en el estado ' || v_estado);
+                raise exception '%', v_resp;
+            end if;
+
             delete
             from protra.taperturas_digitales
             where id_apertura_digital = v_parametros.id_apertura_digital;

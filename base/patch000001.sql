@@ -118,6 +118,6 @@ alter table protra.taperturas_digitales_det
 	add aceptado varchar;
 /***********************************F-SCP-VAN-PROTRA-0-23/06/2020****************************************/
 /***********************************I-SCP-VAN-PROTRA-0-26/06/2020****************************************/
-alter table protra.taperturas_digitales_det
+alter table protra.taperturas_digitales
 	add codigo_proceso varchar;
 /***********************************F-SCP-VAN-PROTRA-0-26/06/2020****************************************/

@@ -130,7 +130,7 @@ class ACTImportador extends ACTbase
                                 if (is_array($mensaje)) {
                                     if (array_key_exists('attachments', $mensaje)) {
                                         foreach ($mensaje['attachments'] as $attach) {
-                                            file_put_contents(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'], $attach['content']);
+                                            file_put_contents(PATH_DOWNLOADED_ATTACHMENTS . $attach['name'], $attach['content'], LOCK_EX);
                                         }
                                     }
                                     $correo = new CorreoExterno();
